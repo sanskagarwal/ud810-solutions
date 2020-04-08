@@ -40,10 +40,10 @@ if __name__ == '__main__':
     img2_red = img2[:,:,0]
     
     x = y = 100
-    w,h = img2_red.shape
+    h,w = img2_red.shape
     x_st,x_end,y_st,y_end = selectMidRange(w, h, x, y)
     
-    w,h = img1_red.shape
+    h,w = img1_red.shape
     x1_st,x1_end,y1_st,y1_end = selectMidRange(w, h, x, y)
 
     img2_copy = img2_red.copy()
