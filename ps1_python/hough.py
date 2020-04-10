@@ -53,7 +53,9 @@ def hough_peaks(H1, numpeaks=10, threshold=None, nHoodSize=None):
         endy = min(height, y+hoodY//2)
         
         H[sty:endy, stx:endx] = 0
-        
+    
+    if(len(H_sort)==0):
+        return []
     return np.array(H_sort)[:, 1:]
 
 def hough_lines_draw(img, outfile, peaks, rho, theta):
@@ -65,7 +67,6 @@ def hough_lines_draw(img, outfile, peaks, rho, theta):
     % rho: Vector of rho values, in pixels
     % theta: Vector of theta values, in degrees
     """
-    height, width = img.shape
     H = cv2.cvtColor(np.float32(img), cv2.COLOR_GRAY2RGB)
     for theta_idx , rho_idx in peaks:
         theta_idx = int(theta_idx)
@@ -114,3 +115,77 @@ def hough_lines_draw2(img, outfile, peaks, rho, theta):
         cv2.line(H, pt1, pt2, (0, 255, 0), 2)
         
     cv2.imwrite(os.path.join('output', outfile), H)      
+    
+def hough_circles_acc(BW, radius):
+    """
+    Compute Hough accumulator array for finding circles.
+    
+    % BW: Binary (black and white) image containing edge pixels
+    % radius: Radius of circles to look for, in pixels
+    """
+    
+    height, width = BW.shape
+    thetas = np.arange(0, 180, 1)
+    edge_points = np.transpose(np.nonzero(BW))
+    H = np.zeros((width, height))
+    for y, x in edge_points:
+        for theta in thetas:
+            a = x + radius*math.cos(theta*math.pi/180)
+            b = y + radius*math.sin(theta*math.pi/180)
+            a = int(round(a))
+            b = int(round(b))
+            if(a>=0 and b>=0 and a<width and b<height):
+                H[a,b]+=1
+
+    return H
+    
+def find_circles(BW, radius_range):
+    """
+    Find circles in given radius range using Hough transform.
+    
+    % BW: Binary (black and white) image containing edge pixels
+    % radius_range: Range of circle radii [min max] to look for, in pixels
+    """
+    
+    centers = []
+    radii = []
+    
+    cnt=0
+    for r in radius_range:
+        print(cnt)
+        H = hough_circles_acc(BW, r)
+        center = hough_peaks(H, 10, threshold=0.75*np.amax(H))
+        
+        for x in center:
+            centers.append(x)
+            radii.append(r)
+        print(cnt)
+        cnt+=1
+    return (centers, radii)
+
+def filter_lines(peaks, thetaHood=3, rhoHood=50):
+    """
+    Look for nearby parallel lines in given set of peaks
+    % peaks: List of Theta and Rho
+    % thetaHood: Theta Range to look for
+    % rhoHood: Rho Range to look for
+    """
+    
+    m,n = peaks.shape
+    included = np.zeros(m, dtype=bool)
+    for i in range(m):
+        if(included[i]==True):
+            continue
+        theta, rho = peaks[i]
+        nearbyIndex = np.where(
+            (peaks[:,0] >= theta-thetaHood) & 
+            (peaks[:,0] <= theta+thetaHood) & 
+            (peaks[:,1] >= rho-rhoHood) & 
+            (peaks[:,1] <= rho+rhoHood))[0]
+        if(len(nearbyIndex) == 1):
+            continue
+        for ind in nearbyIndex:
+            included[ind]=True
+    
+    return peaks[np.where(included==True)]
+    
