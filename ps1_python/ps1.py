@@ -18,14 +18,14 @@ if __name__ == '__main__':
     # Problem 1: Canny edge
     img_clean = cv2.GaussianBlur(img,(5,5),1)
     
-    img_sobelx = cv2.Sobel(img_clean,cv2.CV_64F,1,0,ksize=3)
-    img_sobely = cv2.Sobel(img_clean,cv2.CV_64F,0,1,ksize=3)
-    img_grad = cv2.Laplacian(img_clean,cv2.CV_64F)
-    img_dir = np.arctan2(img_sobely,img_sobelx)
+    # img_sobelx = cv2.Sobel(img_clean,cv2.CV_64F,1,0,ksize=3)
+    # img_sobely = cv2.Sobel(img_clean,cv2.CV_64F,0,1,ksize=3)
+    # img_grad = cv2.Laplacian(img_clean,cv2.CV_64F)
+    # img_dir = np.arctan2(img_sobely,img_sobelx)
     
-    plt.imshow(img_sobelx, cmap = 'gray', interpolation = 'bicubic')
-    plt.xticks([]), plt.yticks([])
-    plt.show()
+    # plt.imshow(img_sobelx, cmap = 'gray', interpolation = 'bicubic')
+    # plt.xticks([]), plt.yticks([])
+    # plt.show()
     
     img_edges = cv2.Canny(img, 100, 200)
     cv2.imwrite(os.path.join('output', 'ps1-1-a-1.png'), img_edges)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     cv2.imwrite(os.path.join('output', 'ps1-5-a-3.png'), H1)
     
     H2 = cv2.cvtColor(np.float32(img), cv2.COLOR_GRAY2RGB)
-    centers, radii = hough.find_circles(img_edges, np.arange(20,50,2))
+    centers, radii = hough.find_circles(img_edges, np.arange(20,35,2))
     for point, r in zip(centers, radii):
         x, y = point[0], point[1]
         cv2.drawMarker(H2, (int(y), int(x)), (0,0,255), cv2.MARKER_DIAMOND)
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     img_edges = cv2.Canny(img_clean, 100, 200)
     
     H = cv2.cvtColor(np.float32(img), cv2.COLOR_GRAY2RGB)
-    centers, radii = hough.find_circles(img_edges, np.arange(20,30,2))
+    centers, radii = hough.find_circles(img_edges, np.arange(20,35,2))
     for point, r in zip(centers, radii):
         x, y = point[0], point[1]
         cv2.drawMarker(H, (int(y), int(x)), (0,0,255), cv2.MARKER_DIAMOND)
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     filterPeaks = hough.filter_lines(peaks)
     
     H2 = cv2.cvtColor(np.float32(img), cv2.COLOR_GRAY2RGB)
-    centers, radii = hough.find_circles(img_edges, np.arange(20,24,2))
+    centers, radii = hough.find_circles(img_edges, np.arange(20,35,2))
     for point, r in zip(centers, radii):
         x, y = point[0], point[1]
         cv2.drawMarker(H2, (int(y), int(x)), (255,0,0), cv2.MARKER_DIAMOND)
