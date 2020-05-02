@@ -46,7 +46,7 @@ def hough_peaks(H1, numpeaks=10, threshold=None, nHoodSize=None):
         pos = np.unravel_index(H.argmax(), H.shape)
         x = pos[1]
         y = pos[0]
-        H_sort.append([max_val, x, y])
+        H_sort.append([x, y])
         stx = max(0,x-hoodX//2)
         endx = min(width, x+hoodX//2)
         sty = max(0,y-hoodY//2)
@@ -56,7 +56,7 @@ def hough_peaks(H1, numpeaks=10, threshold=None, nHoodSize=None):
     
     if(len(H_sort)==0):
         return []
-    return np.array(H_sort)[:, 1:]
+    return np.array(H_sort)
 
 def hough_lines_draw(img, outfile, peaks, rho, theta):
     """
