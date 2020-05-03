@@ -1,1 +1,7 @@
+# IDE Cache
 __pycache__
+.idea
+
+# Virtual Environment
+venv
+

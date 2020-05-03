@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-def harris_values(img, alpha=0.05, w_size=5):
+def harris_values(img, alpha=0.05, w_size=5, norm=True):
     Ix = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
     Iy = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)
     
@@ -31,7 +31,9 @@ def harris_values(img, alpha=0.05, w_size=5):
             
             M = np.array([MIxx, MIxy, MIyx, MIyy]).reshape((2,2))
             Hres[r,c] = np.linalg.det(M) - alpha*(M.trace()**2)
-            
+    
+    if(norm==True):
+        Hres = cv2.normalize(Hres, Hres, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     return Hres
 
 def harris_corners(H1, threshold=None, hoodSize=None):
@@ -39,7 +41,7 @@ def harris_corners(H1, threshold=None, hoodSize=None):
     if(hoodSize == None):
         hoodSize = np.array(H.shape)//50 + 1 # 2%
     if(threshold == None):
-        threshold = 0.5 * np.max(H)
+        threshold = 0.3 * np.max(H)
         
     h, w = H.shape
     hoodY, hoodX = hoodSize
