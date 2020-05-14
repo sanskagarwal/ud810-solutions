@@ -33,10 +33,12 @@ def lucas_kanade(img1, img2, w_size=(15, 15)):
     return flow
 
 
-def draw_flow_quiver(flow1, img, filename, step=5):
+def draw_flow_quiver(flow1, img, filename, step=None):
     flow = flow1.copy()
     flow = np.flip(flow, axis=0)
     h, w = img.shape
+    if step is None:
+        step = min(h, w) // 30
     flow = flow[:h, :w, :]  # Change in size because of gaussian pyramids
     x = np.arange(0, w, step)
     y = np.arange(0, h, step)
@@ -71,19 +73,19 @@ def level_lk(img1, img2, level=0, w_size=(21, 21)):
 def equate_size(flow, shape):
     h, w = shape
     h1, w1, _ = flow.shape
-    if(h1 >= h and w1 >= w):
+    if h1 >= h and w1 >= w:
         flow = flow[:h, :w, :]
     else:
         u = flow[:, :, 0]
         v = flow[:, :, 1]
-        diff_h = h-h1
-        diff_w = w-w1
-        if(diff_h > 0):
+        diff_h = h - h1
+        diff_w = w - w1
+        if diff_h > 0:
             for _ in range(diff_h):
                 u = np.append(u, np.atleast_2d(np.zeros(w1, dtype=np.float32)), axis=0)
                 v = np.append(v, np.atleast_2d(np.zeros(w1, dtype=np.float32)), axis=0)
                 h1 += 1
-        if(diff_w > 0):
+        if diff_w > 0:
             for _ in range(diff_w):
                 u = np.append(u, np.atleast_2d(np.zeros(h1, dtype=np.float32)).T, axis=1)
                 v = np.append(v, np.atleast_2d(np.zeros(h1, dtype=np.float32)).T, axis=1)
@@ -99,13 +101,13 @@ def hierarchical_lk(img1, img2, k=None):
         k = int(math.floor(math.log2(mini)))
     lk = img1.copy().astype(np.float32)
     rk = img2.copy().astype(np.float32)
-    levels_lk = [lk.copy()]
-    levels_rk = [rk.copy()]
+    levels_lk = []
+    levels_rk = []
     for _ in range(k):
-        lk = pyramid.reduce(lk)
-        rk = pyramid.reduce(rk)
         levels_lk.append(lk.copy())
         levels_rk.append(rk.copy())
+        lk = pyramid.reduce(lk)
+        rk = pyramid.reduce(rk)
     u = np.zeros(lk.shape, dtype=np.float32)
     v = np.zeros(rk.shape, dtype=np.float32)
 

@@ -23,6 +23,7 @@ The description of each folder is as follows:
 ## 6. PS5 => Optical Flow
  - Basic Lucas Kanade
  - Gaussian and Laplacian Pyramids
- - ...
+ - Warping by flow
+ - Hierarchical LK Optic Flow
 
 ## WIP
