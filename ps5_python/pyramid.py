@@ -9,12 +9,12 @@ def reduce(img1):
     kernel = np.matmul(kernel.T, kernel)
     dst = cv2.filter2D(img, -1, kernel)
     dst = dst[::2, ::2]
+    h, w = dst.shape
     return dst
 
 
 def expand(img1):
-    img = img1.copy()
-    img = img.astype(np.float32)
+    img = img1.copy().astype(np.float32)
     kernel = np.atleast_2d([1, 4, 6, 4, 1]) / 8
     kernel = np.matmul(kernel.T, kernel)
     h, w = img.shape

@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 # User Modules
 import lk
 import pyramid
+import warp
 
 if __name__ == '__main__':
     # Problem 1
@@ -65,3 +66,29 @@ if __name__ == '__main__':
     fig.savefig('output/ps5-2-b-1.png')
 
     # Problem 3
+    yos0 = cv2.imread('input/DataSeq1/yos_img_01.jpg', 0)
+    yos1 = cv2.imread('input/DataSeq1/yos_img_02.jpg', 0)
+    yos2 = cv2.imread('input/DataSeq1/yos_img_03.jpg', 0)
+
+    flow_ds1_1, yos0_l_1, yos1_l_1 = lk.level_lk(yos0, yos1, level=4)
+    flow_ds1_2, yos1_l_2, yos2_l_2 = lk.level_lk(yos1, yos2, level=4)
+    warp_ds1_1 = warp.warp_back(yos1, flow_ds1_1)
+    warp_ds1_2 = warp.warp_back(yos2, flow_ds1_2)
+    diff1 = cv2.subtract(warp_ds1_1, yos0)
+    diff2 = cv2.subtract(warp_ds1_2, yos1)
+
+    lk.draw_flow_quiver(flow_ds1_1, yos0, 'output/ps5-3-a-1.png')
+    lk.draw_flow_quiver(flow_ds1_2, yos1, 'output/ps5-3-a-2.png')
+    cv2.imwrite('output/ps5-3-a-3.png', diff1)
+    cv2.imwrite('output/ps5-3-a-4.png', diff2)
+
+    # Problem 4
+    shift0 = cv2.imread('input/TestSeq/Shift0.png', 0)
+    shiftr10 = cv2.imread('input/TestSeq/ShiftR10.png', 0)
+    shiftr20 = cv2.imread('input/TestSeq/ShiftR20.png', 0)
+    shiftr40 = cv2.imread('input/TestSeq/ShiftR40.png', 0)
+
+    flow_hl_1 = lk.hierarchical_lk(yos0, yos1)
+    lk.draw_flow_quiver(flow_hl_1, yos0, 'output/ps5-4-a-1.png')
+
+
